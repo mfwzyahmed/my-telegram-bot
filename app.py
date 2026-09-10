@@ -4,7 +4,9 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# جلب المتغيرات البيئية التي قمت بإضافتها سابقاً
+# هذا السطر هو السر لكي تتعرف عليه منصة Vercel وتمنع الخطأ 500
+app.config['JSON_AS_ASCII'] = False
+
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 ALLOWED_USERS = os.getenv("TELEGRAM_ALLOWED_USERS", "")
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
@@ -17,30 +19,28 @@ def ask_hermes(user_message):
         "Authorization": f"Bearer {OPENROUTER_KEY}",
         "Content-Type": "application/json"
     }
-    # استخدام نموذج Hermes المجاني والمستقر عبر OpenRouter
     data = {
         "model": "nousresearch/hermes-3-llama-3.1-8b:free",
         "messages": [{"role": "user", "content": user_message}]
     }
     try:
         response = requests.post(url, headers=headers, json=data)
-        return response.json()['choices'][0]['message']['content']
+        return response.json()['choices']['message']['content']
     except Exception:
-        return "عذراً، حدث خطأ أثناء الاتصال بعقل الذكاء الاصطناعي Hermes."
+        return "حدث خطأ أثناء الاتصال بعقل الذكاء الاصطناعي Hermes."
 
 @app.route('/webhook', methods=['POST'])
 def telegram_webhook():
     update = request.get_json()
-    if "message" in update and "text" in update["message"]:
+    if update and "message" in update and "text" in update["message"]:
         chat_id = str(update["message"]["chat"]["id"])
         text = update["message"]["text"]
         
-        # التحقق من أنك أنت فقط من يستخدم البوت للحماية
         if ALLOWED_IDS and chat_id not in ALLOWED_IDS:
             return jsonify({"status": "ignored"})
             
         if text == "/start":
-            reply = "مرحباً بك! أنا Hermes Agent، عميلك الذكي الشخصي. كيف يمكنني مساعدتك اليوم؟"
+            reply = "مرحباً بك! أنا Hermes Agent، عميلك الذكي الشخصي المستضاف مجاناً. كيف يمكنني مساعدتك؟"
         else:
             reply = ask_hermes(text)
             
@@ -51,7 +51,4 @@ def telegram_webhook():
 
 @app.route('/')
 def home():
-    return "Hermes Bot is Running!"
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return "Hermes Bot is Active and Healthy!"
