@@ -3,14 +3,12 @@ import requests
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-
 app.config['JSON_AS_ASCII'] = False
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 ALLOWED_USERS = os.getenv("TELEGRAM_ALLOWED_USERS", "")
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# تحويل المعرفات إلى نصوص نظيفة مجردة من المسافات
 ALLOWED_IDS = [id.strip() for id in ALLOWED_USERS.split(",") if id.strip()]
 
 def ask_hermes(user_message):
@@ -27,7 +25,7 @@ def ask_hermes(user_message):
         response = requests.post(url, headers=headers, json=data)
         return response.json()['choices']['message']['content']
     except Exception:
-        return "حدث خطأ أثناء الاتصال بعقل الذكاء الاصطناعي Hermes."
+        return "Error connecting to Hermes AI."
 
 @app.route('/webhook', methods=['POST'])
 def telegram_webhook():
@@ -40,7 +38,7 @@ def telegram_webhook():
             return jsonify({"status": "ignored"})
             
         if text == "/start":
-            reply = "مرحباً بك! أنا Hermes Agent، عميلك الذكي الشخصي المستضاف مجاناً. كيف يمكنني مساعدتك اليوم؟"
+            reply = "Welcome! I am Hermes Agent, your AI assistant."
         else:
             reply = ask_hermes(text)
             
@@ -52,3 +50,5 @@ def telegram_webhook():
 @app.route('/')
 def home():
     return "Hermes Bot is Active and Healthy!"
+
+app_target = app
