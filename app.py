@@ -6,10 +6,7 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-ALLOWED_USERS = os.getenv("TELEGRAM_ALLOWED_USERS", "")
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
-
-ALLOWED_IDS = [id.strip() for id in ALLOWED_USERS.split(",") if id.strip()]
 
 def ask_ai(user_message):
     url = "https://openrouter.ai"
@@ -23,7 +20,7 @@ def ask_ai(user_message):
     }
     try:
         response = requests.post(url, headers=headers, json=data)
-        return response.json()['choices']['message']['content']
+        return response.json()['choices'][0]['message']['content']
     except Exception:
         return "Error connecting to AI Server."
 
