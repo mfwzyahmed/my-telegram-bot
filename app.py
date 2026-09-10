@@ -38,7 +38,7 @@ def telegram_webhook():
             return jsonify({"status": "ignored"})
             
         if text == "/start":
-            reply = "Welcome! I am Hermes Agent, your AI assistant."
+            reply = "Welcome! I am Hermes Agent, your AI assistant. How can I help you today?"
         else:
             reply = ask_hermes(text)
             
