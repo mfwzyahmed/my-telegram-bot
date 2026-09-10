@@ -34,9 +34,6 @@ def telegram_webhook():
         chat_id = str(update["message"]["chat"]["id"])
         text = update["message"]["text"]
         
-        if ALLOWED_IDS and chat_id not in ALLOWED_IDS:
-            return jsonify({"status": "ignored"})
-            
         if text == "/start":
             reply = "Welcome! I am your AI assistant. How can I help you today?"
         else:
