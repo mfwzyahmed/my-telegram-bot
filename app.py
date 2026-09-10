@@ -11,21 +11,22 @@ OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 
 ALLOWED_IDS = [id.strip() for id in ALLOWED_USERS.split(",") if id.strip()]
 
-def ask_hermes(user_message):
+def ask_ai(user_message):
     url = "https://openrouter.ai"
     headers = {
         "Authorization": f"Bearer {OPENROUTER_KEY}",
         "Content-Type": "application/json"
     }
+    # استخدام الموديل المجاني المستقر الحالي من القائمة الرسمية لـ OpenRouter
     data = {
-        "model": "nousresearch/hermes-3-llama-3.1-8b:free",
+        "model": "google/gemini-2.5-flash",
         "messages": [{"role": "user", "content": user_message}]
     }
     try:
         response = requests.post(url, headers=headers, json=data)
         return response.json()['choices']['message']['content']
     except Exception:
-        return "Error connecting to Hermes AI."
+        return "حدث خطأ أثناء معالجة الرد، يرجى التحقق من مفتاح OpenRouter."
 
 @app.route('/webhook', methods=['POST'])
 def telegram_webhook():
@@ -38,9 +39,9 @@ def telegram_webhook():
             return jsonify({"status": "ignored"})
             
         if text == "/start":
-            reply = "Welcome! I am Hermes Agent, your AI assistant. How can I help you today?"
+            reply = "مرحباً بك! أنا عميلك الذكي الشخصي المحدث بنجاح. كيف يمكنني مساعدتك اليوم؟"
         else:
-            reply = ask_hermes(text)
+            reply = ask_ai(text)
             
         telegram_url = f"https://telegram.org{TOKEN}/sendMessage"
         requests.post(telegram_url, json={"chat_id": chat_id, "text": reply})
@@ -49,4 +50,4 @@ def telegram_webhook():
 
 @app.route('/')
 def home():
-    return "Hermes Bot is Active and Healthy!"
+    return "Bot Server is Active and Healthy!"
