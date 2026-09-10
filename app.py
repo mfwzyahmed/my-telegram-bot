@@ -5,10 +5,13 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# سطر إجباري لجعل السيرفر مرئياً لمنصة Vercel
+app.debug = True
+
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 @app.route('/webhook', methods=['POST'])
-def webhook():
+def telegram_webhook_handler():
     try:
         data = request.get_json(force=True)
         message = data.get("message", {})
@@ -16,7 +19,8 @@ def webhook():
         chat_id = message.get("chat", {}).get("id")
         
         if chat_id and text:
-            reply_text = f"أهلاً بك! البوت يعمل الآن بنجاح 100% وبدون أخطاء 🚀\nرسالتك هي: {text}"
+            # رد تلقائي ثابت ومباشر
+            reply_text = f"تم استقبال رسالتك بنجاح! لقد كتبت لي: {text}"
             url = f"https://telegram.org{TOKEN}/sendMessage"
             
             payload = {"chat_id": chat_id, "text": reply_text}
@@ -34,4 +38,8 @@ def webhook():
 
 @app.route('/')
 def index():
-    return "Bot Server is Online!"
+    return "Bot Server is Active and Running!"
+
+# السطر الذهبي لتشغيل التطبيق كـ WSGI على Vercel
+if __name__ == '__main__':
+    app.run()
