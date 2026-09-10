@@ -38,7 +38,7 @@ def telegram_webhook():
             return jsonify({"status": "ignored"})
             
         if text == "/start":
-            reply = "Welcome! I am Hermes Agent, your AI assistant."
+            reply = "Welcome! I am Hermes Agent, your AI assistant. How can I help you today?"
         else:
             reply = ask_hermes(text)
             
@@ -50,5 +50,3 @@ def telegram_webhook():
 @app.route('/')
 def home():
     return "Hermes Bot is Active and Healthy!"
-
-app_target = app
