@@ -17,7 +17,6 @@ def ask_ai(user_message):
         "Authorization": f"Bearer {OPENROUTER_KEY}",
         "Content-Type": "application/json"
     }
-    # استخدام الموديل المجاني المستقر الحالي من القائمة الرسمية لـ OpenRouter
     data = {
         "model": "google/gemini-2.5-flash",
         "messages": [{"role": "user", "content": user_message}]
@@ -26,7 +25,7 @@ def ask_ai(user_message):
         response = requests.post(url, headers=headers, json=data)
         return response.json()['choices']['message']['content']
     except Exception:
-        return "حدث خطأ أثناء معالجة الرد، يرجى التحقق من مفتاح OpenRouter."
+        return "Error connecting to AI Server."
 
 @app.route('/webhook', methods=['POST'])
 def telegram_webhook():
@@ -39,7 +38,7 @@ def telegram_webhook():
             return jsonify({"status": "ignored"})
             
         if text == "/start":
-            reply = "مرحباً بك! أنا عميلك الذكي الشخصي المحدث بنجاح. كيف يمكنني مساعدتك اليوم؟"
+            reply = "Welcome! I am your AI assistant. How can I help you today?"
         else:
             reply = ask_ai(text)
             
