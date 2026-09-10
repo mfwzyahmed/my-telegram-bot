@@ -3,26 +3,8 @@ import requests
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
-
-def ask_ai(user_message):
-    url = "https://openrouter.ai"
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model": "google/gemini-2.5-flash",
-        "messages": [{"role": "user", "content": user_message}]
-    }
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        return response.json()['choices'][0]['message']['content']
-    except Exception:
-        return "Error connecting to AI Server."
 
 @app.route('/webhook', methods=['POST'])
 def telegram_webhook():
@@ -31,10 +13,7 @@ def telegram_webhook():
         chat_id = str(update["message"]["chat"]["id"])
         text = update["message"]["text"]
         
-        if text == "/start":
-            reply = "Welcome! I am your AI assistant. How can I help you today?"
-        else:
-            reply = ask_ai(text)
+        reply = f"تم استلام رسالتك بنجاح! لقد كتبت لي: {text}"
             
         telegram_url = f"https://telegram.org{TOKEN}/sendMessage"
         requests.post(telegram_url, json={"chat_id": chat_id, "text": reply})
@@ -43,4 +22,4 @@ def telegram_webhook():
 
 @app.route('/')
 def home():
-    return "Bot Server is Active and Healthy!"
+    return "Test Bot Server is Active!"
