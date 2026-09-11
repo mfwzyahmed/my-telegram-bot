@@ -8,7 +8,7 @@ app = Flask(__name__)
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 
 @app.route('/api/webhook', methods=['POST'])
-def telegram_webhook():
+def webhook():
     try:
         data = request.get_json(force=True, silent=True) or {}
         message = data.get("message", {})
@@ -35,6 +35,10 @@ def telegram_webhook():
 
     return jsonify({"status": "ok"}), 200
 
-@app.route('/')
-def home():
-    return "Bot Server is Active!", 200
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return "Hermes Bot Server is Active!", 200
+
+if __name__ == '__main__':
+    app.run()
