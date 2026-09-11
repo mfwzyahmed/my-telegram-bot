@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 
-@app.route('/api/webhook', methods=['POST'])
+@app.route('/api/webhook', methods=['POST']) 
+@app.route('/webhook', methods=['POST'])
 def webhook():
     try:
         data = request.get_json(force=True, silent=True) or {}
