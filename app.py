@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 
-@app.route('/api/webhook', methods=['POST']) 
+# دعم كلا المسارين لتفادي خطأ 404 في Vercel
+@app.route('/api/webhook', methods=['POST'])
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
@@ -32,13 +33,12 @@ def webhook():
             )
             urllib.request.urlopen(req, timeout=5)
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error handling request: {e}")
 
     return jsonify({"status": "ok"}), 200
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
+@app.route('/')
+def home():
     return "Hermes Bot Server is Active!", 200
 
 if __name__ == '__main__':
